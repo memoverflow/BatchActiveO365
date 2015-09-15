@@ -150,8 +150,6 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="app.manifest" />
-    <None Include="Application\Lucas.BatchActiveO365.exe.config" />
-    <None Include="Application\users.xlsx" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -167,21 +165,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Microsoft.ico" />
-    <Content Include="Application\ICSharpCode.SharpZipLib.dll" />
-    <Content Include="Application\log4net.dll" />
-    <Resource Include="Application\log4net.xml" />
-    <Content Include="Application\Lucas.BatchActiveO365.exe" />
-    <Content Include="Application\MahApps.Metro.dll" />
-    <Resource Include="Application\MahApps.Metro.xml" />
-    <Content Include="Application\NPOI.dll" />
-    <Content Include="Application\NPOI.OOXML.dll" />
-    <Resource Include="Application\NPOI.OOXML.xml" />
-    <Content Include="Application\NPOI.OpenXml4Net.dll" />
-    <Resource Include="Application\NPOI.OpenXml4Net.xml" />
-    <Content Include="Application\NPOI.OpenXmlFormats.dll" />
-    <Resource Include="Application\NPOI.xml" />
-    <Content Include="Application\OSPP.VBS" />
-    <Content Include="Application\System.Windows.Interactivity.dll" />
     <Content Include="OSPP.VBS">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
