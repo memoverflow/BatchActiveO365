@@ -176,10 +176,11 @@ namespace Lucas.BatchActiveO365
                 {
                     var process = Process.Start(System.AppDomain.CurrentDomain.BaseDirectory + "users.xlsx");
                     var waitSeconds = Convert.ToInt32(ConfigurationManager.AppSettings["WaitSeconds"]);
-                    await Task.Delay(waitSeconds * 1000);
+                    await Task.Delay(waitSeconds * 1000).ContinueWith((a)=> {
+                        process.Kill();
+                        process.Dispose();
+                    });
                     
-                    process.Kill();
-                    process.Dispose();
                 }
                 catch (Exception ex)
                 {
