@@ -13,5 +13,6 @@ namespace Lucas.BatchActiveO365
     /// </summary>
     public partial class App : Application
     {
+        
     }
 }

@@ -1,12 +1,34 @@
-﻿<Window x:Class="Lucas.BatchActiveO365.MainWindow"
+﻿<Controls:MetroWindow x:Class="Lucas.BatchActiveO365.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Lucas.BatchActiveO365"
+        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        
+        EnableDWMDropShadow="True"
+        ResizeMode="CanResizeWithGrip"
+        WindowTransitionsEnabled="False"
+        WindowStartupLocation="CenterScreen"
+        DataContext="{Binding RelativeSource={RelativeSource self}}"
+        Title="批量激活Office365客户端" Height="350" Width="525">
+    <Grid DataContext="{Binding RelativeSource={RelativeSource Self}}">
+        <StackPanel Margin="10,10">
+            <DataGrid CanUserAddRows="False" IsReadOnly="True" CanUserDeleteRows="False" x:Name="dataGridControl" SelectionMode="Single" CanUserResizeRows="False">
+
+            </DataGrid>
+            <StackPanel Orientation="Horizontal" Margin="5,15,0,0">
+                <TextBlock x:Name="textControl" FontSize="18">
+                <Run Text="当前正在执行 : 第"></Run>
+                <Run x:Name="indexControl"></Run>
+                <Run Text="项"></Run>
+                </TextBlock>
+                
+                <Controls:ProgressRing Margin="10,0,0,0" IsActive="True" Width="20" Height="20"></Controls:ProgressRing>
+                <TextBlock x:Name="loadingTextControl" FontSize="18"  Margin="10,0,0,0"></TextBlock>
+            </StackPanel>
+            
+        </StackPanel>
+       
     </Grid>
-</Window>
+</Controls:MetroWindow>
