@@ -87,7 +87,8 @@ namespace Lucas.BatchActiveO365
                 {
                     MoveNext();
                     var currentUser = Users[CurrentIndex];
-                    RegisterTool.WriteDefaultLogin(currentUser);
+                    
+                    RegisterTool.WriteDefaultLogin(currentUser,object.Equals(ConfigurationManager.AppSettings["IsEnableDomain"],"true"));
                     System.Diagnostics.Process.Start("shutdown", @"/r /t 0");
                 }
                 catch (Exception ex)
@@ -113,7 +114,7 @@ namespace Lucas.BatchActiveO365
                     //如果当前用户是excel表格里面的第一个用户
                     if (Environment.UserName != currentUser.UserName)
                     {
-                        RegisterTool.WriteDefaultLogin(currentUser);
+                        RegisterTool.WriteDefaultLogin(currentUser, object.Equals(ConfigurationManager.AppSettings["IsEnableDomain"], "true"));
                         System.Diagnostics.Process.Start("shutdown", @"/r /t 0");
                     }
                 }

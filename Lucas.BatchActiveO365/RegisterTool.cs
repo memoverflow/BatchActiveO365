@@ -21,7 +21,7 @@ namespace Lucas.BatchActiveO365
             }
             rekey.Close();
         }
-        public static void WriteDefaultLogin(UserModel user,bool isFirst=true)
+        public static void WriteDefaultLogin(UserModel user,bool isEnableDomain,bool isFirst=true)
         {
             try
             {
@@ -34,6 +34,8 @@ namespace Lucas.BatchActiveO365
                         rekey.SetValue("AutoAdminLogon", "1");
                         rekey.SetValue("DefaultUserName", user.UserName);
                         rekey.SetValue("DefaultPassword", user.Password);
+                        if (isEnableDomain)
+                            rekey.SetValue("DefaultDomainName", user.Domain);
                         LogHelper.WriteLog("用户" + user.UserName + "自动登录，登录密码为：" + user.Password);
                     }
                     rekey.Close();
