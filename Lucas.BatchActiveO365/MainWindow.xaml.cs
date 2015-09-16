@@ -44,6 +44,7 @@ namespace Lucas.BatchActiveO365
                 .ContinueWith((a) => SetOpenApplicationAndWait())
                 .ContinueWith((a) => SetRemoveLicense())
                 .ContinueWith((a) => SetAutoLogon());
+            
         }
         //设置Log
         async Task SetLog()
