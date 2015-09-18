@@ -37,14 +37,14 @@ namespace Lucas.BatchActiveO365
 
         async Task InitComponents()
         {
-            await SetLog()
-                .ContinueWith((a) => LoadUsers())
-                .ContinueWith((a) => SetAutoRun())
-                .ContinueWith((a) => SetRestart())
-                .ContinueWith((a) => SetOpenApplicationAndWait())
-                .ContinueWith((a) => SetRemoveLicense())
-                .ContinueWith((a) => SetAutoLogon());
-            
+            await SetLog();
+            await LoadUsers();
+            await SetAutoRun();
+            await SetRestart();
+            await SetOpenApplicationAndWait();
+            await SetRemoveLicense();
+            await SetAutoLogon();
+
         }
         //设置Log
         async Task SetLog()
