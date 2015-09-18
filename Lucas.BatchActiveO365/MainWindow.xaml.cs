@@ -16,6 +16,7 @@ using MahApps.Metro.Controls;
 using Microsoft.Win32;
 using System.Diagnostics;
 using System.Configuration;
+using System.Threading;
 
 namespace Lucas.BatchActiveO365
 {
@@ -91,6 +92,7 @@ namespace Lucas.BatchActiveO365
                     
                     RegisterTool.WriteDefaultLogin(currentUser,object.Equals(ConfigurationManager.AppSettings["IsEnableDomain"],"true"));
                     System.Diagnostics.Process.Start("shutdown", @"/r /t 0");
+
                 }
                 catch (Exception ex)
                 {
@@ -172,17 +174,18 @@ namespace Lucas.BatchActiveO365
             var msg = "打开Excel并等待...";
             loadingTextControl.Text = msg;
             LogHelper.WriteLog(msg);
-            await Task.Factory.StartNew(async() =>
+            await Task.Factory.StartNew(() =>
             {
                 try
                 {
                     var process = Process.Start(System.AppDomain.CurrentDomain.BaseDirectory + "users.xlsx");
                     var waitSeconds = Convert.ToInt32(ConfigurationManager.AppSettings["WaitSeconds"]);
-                    await Task.Delay(waitSeconds * 1000).ContinueWith((a)=> {
-                        process.Kill();
-                        process.Dispose();
-                    });
-                    
+                    var tokenSource = new CancellationTokenSource();
+                    var token = tokenSource.Token;
+                    Task taskDelay = Task.Delay(waitSeconds*1000, token);
+                    taskDelay.Wait();
+                    process.Kill();
+                    process.Dispose();
                 }
                 catch (Exception ex)
                 {
