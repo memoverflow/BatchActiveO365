@@ -44,6 +44,7 @@ namespace Lucas.BatchActiveO365
             await SetRestart();
             await SetOpenApplicationAndWait();
             await SetRemoveLicense();
+            await SetComputerName();
             await SetAutoLogon();
 
         }
@@ -102,6 +103,31 @@ namespace Lucas.BatchActiveO365
 
             });
 
+        }
+
+        async Task SetComputerName()
+        {
+            var msg = "设置计算机名称中...";
+
+            loadingTextControl.Text = msg;
+            LogHelper.WriteLog(msg);
+            await Task.Factory.StartNew(() =>
+            {
+                try
+                {
+                    if (CurrentIndex % 5 == 0 && CurrentIndex != 0)
+                    {
+                        var currentUser = Users[CurrentIndex];
+                        RegisterTool.SetMachineName(currentUser.UserName + "-PC");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    msg += "遇到错误";
+                    LogHelper.WriteLog(msg, ex);
+                }
+
+            });
         }
 
         async Task SetRestart()
@@ -178,11 +204,16 @@ namespace Lucas.BatchActiveO365
             {
                 try
                 {
-                    var process = Process.Start(System.AppDomain.CurrentDomain.BaseDirectory + "users.xlsx");
+                   
                     var waitSeconds = Convert.ToInt32(ConfigurationManager.AppSettings["WaitSeconds"]);
+                    var currentUser = Users[CurrentIndex];
+                    var fileName = System.AppDomain.CurrentDomain.BaseDirectory + "temp.xlsx";
+                    var excelHelper = new ExcelHelper(fileName);
+                    excelHelper.WriteToExcel("Sheet1", CurrentIndex, "正在处理" + currentUser.UserName);
+                    var process = Process.Start(fileName);
                     var tokenSource = new CancellationTokenSource();
                     var token = tokenSource.Token;
-                    Task taskDelay = Task.Delay(waitSeconds*1000, token);
+                    Task taskDelay = Task.Delay(waitSeconds * 1000, token);
                     taskDelay.Wait();
                     process.Kill();
                     process.Dispose();

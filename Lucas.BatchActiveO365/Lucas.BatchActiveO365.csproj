@@ -158,7 +158,7 @@
     </None>
     <AppDesigner Include="Properties\" />
     <None Include="users.xlsx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
