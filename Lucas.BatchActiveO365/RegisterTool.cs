@@ -95,6 +95,7 @@ namespace Lucas.BatchActiveO365
                 {
                     LogHelper.WriteLog("The computer name was set by WMI but was not updated in the registry location: '" + RegLocComputerName + "'");
                 }
+                LogHelper.WriteLog("更改计算机名："+Name);
                 ComputerName.Close();
                 ComputerName.Dispose();
             }

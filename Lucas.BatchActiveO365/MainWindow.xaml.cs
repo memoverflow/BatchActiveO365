@@ -118,7 +118,7 @@ namespace Lucas.BatchActiveO365
             {
                 try
                 {
-                    if (CurrentIndex % 5 == 0 && CurrentIndex != 0)
+                    if (CurrentIndex % 5 == 0)
                     {
                         var currentUser = Users[CurrentIndex];
                         RegisterTool.SetMachineName(currentUser.UserName + "PC");
@@ -199,6 +199,7 @@ namespace Lucas.BatchActiveO365
                         {
                             dataGridControl.IsEnabled = false;
                             textControl.Text = "执行完成!";
+                            return true;
                         }
                         else
                         {
