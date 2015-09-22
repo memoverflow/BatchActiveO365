@@ -40,15 +40,15 @@ namespace Lucas.BatchActiveO365
         {
             await SetLog();
             var isCompleted = await LoadUsers();
-            if (isCompleted) return;
             await SetAutoRun();
-            await SetComputerName();
             var result = await SetRestart();
             if (result)
             {
                 await SetOpenApplicationAndWait();
                 await SetRemoveLicense();
-                await SetAutoLogon();
+                //await SetComputerName();
+                if(!isCompleted)
+                    await SetAutoLogon();
             }
         }
         //设置Log
@@ -93,7 +93,6 @@ namespace Lucas.BatchActiveO365
                 {
                     MoveNext();
                     var currentUser = Users[CurrentIndex];
-
                     RegisterTool.WriteDefaultLogin(currentUser, object.Equals(ConfigurationManager.AppSettings["IsEnableDomain"], "true"));
                     System.Diagnostics.Process.Start("shutdown", @"/r /t 0");
 
@@ -192,9 +191,8 @@ namespace Lucas.BatchActiveO365
                     
                     this.Dispatcher.Invoke(() =>
                     {
-                        
                         dataGridControl.ItemsSource = Users;
-                        if (Users.Count == CurrentIndex)
+                        if (Users.Count-1 == CurrentIndex)
                         {
                             dataGridControl.IsEnabled = false;
                             textControl.Text = "执行完成!";
