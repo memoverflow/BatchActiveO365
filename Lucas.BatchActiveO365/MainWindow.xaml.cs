@@ -39,7 +39,8 @@ namespace Lucas.BatchActiveO365
         async Task InitComponents()
         {
             await SetLog();
-            await LoadUsers();
+            var isCompleted = await LoadUsers();
+            if (isCompleted) return;
             await SetAutoRun();
             var result = await SetRestart();
             if (result)
@@ -49,7 +50,6 @@ namespace Lucas.BatchActiveO365
                 await SetComputerName();
                 await SetAutoLogon();
             }
-
         }
         //设置Log
         async Task SetLog()
@@ -179,20 +179,21 @@ namespace Lucas.BatchActiveO365
         }
 
         //从本地文件中获取用户
-        async Task LoadUsers()
+        async Task<bool> LoadUsers()
         {
             var msg = "获取本地文件并解析...";
             loadingTextControl.Text = msg;
             LogHelper.WriteLog(msg);
-            await Task.Factory.StartNew(() =>
+            return await Task.Factory.StartNew(() =>
             {
                 try
                 {
                     var excelHelper = new ExcelHelper(System.AppDomain.CurrentDomain.BaseDirectory + "users.xlsx");
                     Users = excelHelper.ExcelToUsers("Sheet1", false);
-
+                    
                     this.Dispatcher.Invoke(() =>
                     {
+                        
                         dataGridControl.ItemsSource = Users;
                         if (Users.Count == CurrentIndex)
                         {
@@ -204,6 +205,12 @@ namespace Lucas.BatchActiveO365
                             dataGridControl.SelectedIndex = CurrentIndex;
                             indexControl.Text = CurrentIndex + 1 + "";
                         }
+                        if (CurrentIndex == Users.Count())
+                        {
+                            MessageBox.Show("所有用户更新完成！！");
+                            return true;
+                        }
+                        return false;
                     });
                 }
                 catch (Exception ex)
@@ -211,6 +218,7 @@ namespace Lucas.BatchActiveO365
                     msg += "遇到错误";
                     LogHelper.WriteLog(msg, ex);
                 }
+                return false;
             });
 
         }

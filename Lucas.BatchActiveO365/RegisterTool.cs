@@ -3,6 +3,8 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Management;
+using System.Runtime.InteropServices;
 using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
@@ -66,23 +68,41 @@ namespace Lucas.BatchActiveO365
             rekey.Close();
         }
 
-        public static bool SetMachineName(string newName)
+        public static bool SetMachineName(string Name)
         {
-            RegistryKey key = Registry.LocalMachine;
+            String RegLocComputerName = @"SYSTEM\CurrentControlSet\Control\ComputerName\ComputerName";
+            try
+            {
+                string compPath = "Win32_ComputerSystem.Name='" + System.Environment.MachineName + "'";
+                using (ManagementObject mo = new ManagementObject(new ManagementPath(compPath)))
+                {
+                    ManagementBaseObject inputArgs = mo.GetMethodParameters("Rename");
+                    inputArgs["Name"] = Name;
+                    ManagementBaseObject output = mo.InvokeMethod("Rename", inputArgs, null);
+                    uint retValue = (uint)Convert.ChangeType(output.Properties["ReturnValue"].Value, typeof(uint));
+                    if (retValue != 0)
+                    {
+                        LogHelper.WriteLog("Computer could not be changed due to unknown reason.");
+                    }
+                }
 
-            string activeComputerName = "SYSTEM\\CurrentControlSet\\Control\\ComputerName\\ActiveComputerName";
-            RegistryKey activeCmpName = key.CreateSubKey(activeComputerName);
-            activeCmpName.SetValue("ComputerName", newName);
-            activeCmpName.Close();
-            string computerName = "SYSTEM\\CurrentControlSet\\Control\\ComputerName\\ComputerName";
-            RegistryKey cmpName = key.CreateSubKey(computerName);
-            cmpName.SetValue("ComputerName", newName);
-            cmpName.Close();
-            string _hostName = "SYSTEM\\CurrentControlSet\\services\\Tcpip\\Parameters\\";
-            RegistryKey hostName = key.CreateSubKey(_hostName);
-            hostName.SetValue("Hostname", newName);
-            hostName.SetValue("NV Hostname", newName);
-            hostName.Close();
+                RegistryKey ComputerName = Registry.LocalMachine.OpenSubKey(RegLocComputerName);
+                if (ComputerName == null)
+                {
+                    LogHelper.WriteLog("Registry location '" + RegLocComputerName + "' is not readable.");
+                }
+                if (((String)ComputerName.GetValue("ComputerName")) != Name)
+                {
+                    LogHelper.WriteLog("The computer name was set by WMI but was not updated in the registry location: '" + RegLocComputerName + "'");
+                }
+                ComputerName.Close();
+                ComputerName.Dispose();
+            }
+            catch (Exception ex)
+            {
+                LogHelper.WriteLog("出现错误", ex);
+                return false;
+            }
             return true;
         }
     }
