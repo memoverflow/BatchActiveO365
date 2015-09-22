@@ -41,11 +41,14 @@ namespace Lucas.BatchActiveO365
             await SetLog();
             await LoadUsers();
             await SetAutoRun();
-            await SetRestart();
-            await SetOpenApplicationAndWait();
-            await SetRemoveLicense();
-            await SetComputerName();
-            await SetAutoLogon();
+            var result = await SetRestart();
+            if (result)
+            {
+                await SetOpenApplicationAndWait();
+                await SetRemoveLicense();
+                await SetComputerName();
+                await SetAutoLogon();
+            }
 
         }
         //设置Log
@@ -81,7 +84,7 @@ namespace Lucas.BatchActiveO365
         async Task SetAutoLogon()
         {
             var msg = "设置自动登录中...";
-            
+
             loadingTextControl.Text = msg;
             LogHelper.WriteLog(msg);
             await Task.Factory.StartNew(() =>
@@ -90,8 +93,8 @@ namespace Lucas.BatchActiveO365
                 {
                     MoveNext();
                     var currentUser = Users[CurrentIndex];
-                    
-                    RegisterTool.WriteDefaultLogin(currentUser,object.Equals(ConfigurationManager.AppSettings["IsEnableDomain"],"true"));
+
+                    RegisterTool.WriteDefaultLogin(currentUser, object.Equals(ConfigurationManager.AppSettings["IsEnableDomain"], "true"));
                     System.Diagnostics.Process.Start("shutdown", @"/r /t 0");
 
                 }
@@ -130,29 +133,47 @@ namespace Lucas.BatchActiveO365
             });
         }
 
-        async Task SetRestart()
+        async Task<bool> SetRestart()
         {
             var msg = "设置检查当前用户中...";
             var currentUser = Users[CurrentIndex];
             loadingTextControl.Text = msg;
             LogHelper.WriteLog(msg);
-            await Task.Factory.StartNew(() =>
+            return await Task<bool>.Factory.StartNew(() =>
             {
                 try
                 {
                     //如果当前用户是excel表格里面的第一个用户
                     if (Environment.UserName != currentUser.UserName)
                     {
-                        RegisterTool.WriteDefaultLogin(currentUser, object.Equals(ConfigurationManager.AppSettings["IsEnableDomain"], "true"));
-                        System.Diagnostics.Process.Start("shutdown", @"/r /t 0");
+                        
+                        return this.Dispatcher.Invoke(() =>
+                        {
+                            var result = MessageBox.Show("当前登录用户和要执行用户不是同一用户，是否重启？", "", MessageBoxButton.YesNo);
+                            if (result == MessageBoxResult.Yes)
+                            {
+
+                                RegisterTool.WriteDefaultLogin(currentUser, object.Equals(ConfigurationManager.AppSettings["IsEnableDomain"], "true"));
+                                System.Diagnostics.Process.Start("shutdown", @"/r /t 0");
+                                return true;
+                            }
+                            else
+                            {
+                                return false;
+                            }
+
+                            
+                        });
+
                     }
+                    return true;
                 }
                 catch (Exception ex)
                 {
                     msg += "遇到错误";
                     LogHelper.WriteLog(msg, ex);
+                    return false;
                 }
-
             });
 
         }
@@ -204,7 +225,7 @@ namespace Lucas.BatchActiveO365
             {
                 try
                 {
-                   
+
                     var waitSeconds = Convert.ToInt32(ConfigurationManager.AppSettings["WaitSeconds"]);
                     var currentUser = Users[CurrentIndex];
                     var fileName = System.AppDomain.CurrentDomain.BaseDirectory + "temp.xlsx";
