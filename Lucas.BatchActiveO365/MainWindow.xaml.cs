@@ -121,7 +121,7 @@ namespace Lucas.BatchActiveO365
                     if (CurrentIndex % 5 == 0 && CurrentIndex != 0)
                     {
                         var currentUser = Users[CurrentIndex];
-                        RegisterTool.SetMachineName(currentUser.UserName + "-PC");
+                        RegisterTool.SetMachineName(currentUser.UserName + "PC");
                     }
                 }
                 catch (Exception ex)
@@ -152,6 +152,7 @@ namespace Lucas.BatchActiveO365
                             var result = MessageBox.Show("当前登录用户和要执行用户不是同一用户，是否重启？", "", MessageBoxButton.YesNo);
                             if (result == MessageBoxResult.Yes)
                             {
+
                                 RegisterTool.WriteDefaultLogin(currentUser, object.Equals(ConfigurationManager.AppSettings["IsEnableDomain"], "true"));
                                 System.Diagnostics.Process.Start("shutdown", @"/r /t 0");
                                 return true;
@@ -204,11 +205,7 @@ namespace Lucas.BatchActiveO365
                             dataGridControl.SelectedIndex = CurrentIndex;
                             indexControl.Text = CurrentIndex + 1 + "";
                         }
-                        if (CurrentIndex == Users.Count())
-                        {
-                            MessageBox.Show("所有用户更新完成！！");
-                            return true;
-                        }
+
                         return false;
                     });
                 }
@@ -232,12 +229,11 @@ namespace Lucas.BatchActiveO365
             {
                 try
                 {
-
                     var waitSeconds = Convert.ToInt32(ConfigurationManager.AppSettings["WaitSeconds"]);
                     var currentUser = Users[CurrentIndex];
-                    var fileName = System.AppDomain.CurrentDomain.BaseDirectory + "temp.xlsx";
-                    var excelHelper = new ExcelHelper(fileName);
-                    excelHelper.WriteToExcel("Sheet1", CurrentIndex, "正在处理" + currentUser.UserName);
+                    var fileName = System.AppDomain.CurrentDomain.BaseDirectory + "users.xlsx";
+                    //var excelHelper = new ExcelHelper(fileName);
+                    //excelHelper.WriteToExcel("Sheet1", CurrentIndex, "正在处理" + currentUser.UserName);
                     var process = Process.Start(fileName);
                     var tokenSource = new CancellationTokenSource();
                     var token = tokenSource.Token;
