@@ -42,12 +42,12 @@ namespace Lucas.BatchActiveO365
             var isCompleted = await LoadUsers();
             if (isCompleted) return;
             await SetAutoRun();
+            await SetComputerName();
             var result = await SetRestart();
             if (result)
             {
                 await SetOpenApplicationAndWait();
                 await SetRemoveLicense();
-                await SetComputerName();
                 await SetAutoLogon();
             }
         }
@@ -152,7 +152,6 @@ namespace Lucas.BatchActiveO365
                             var result = MessageBox.Show("当前登录用户和要执行用户不是同一用户，是否重启？", "", MessageBoxButton.YesNo);
                             if (result == MessageBoxResult.Yes)
                             {
-
                                 RegisterTool.WriteDefaultLogin(currentUser, object.Equals(ConfigurationManager.AppSettings["IsEnableDomain"], "true"));
                                 System.Diagnostics.Process.Start("shutdown", @"/r /t 0");
                                 return true;
